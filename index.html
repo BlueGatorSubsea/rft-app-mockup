@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reliance Fly &amp; Tackle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --slate: #2B3A3F;
+    --slate-deep: #1D282C;
+    --bark: #5C4530;
+    --bark-light: #7A5E42;
+    --foam: #E8E4D9;
+    --foam-card: #F5F2EA;
+    --amber: #C97A2B;
+    --amber-soft: #E8B17B;
+    --trout: #3D5A45;
+    --trout-light: #5C7D63;
+    --ridge: #6B5B73;
+    --ridge-light: #9485A0;
+    --asphalt: #44494B;
+    --asphalt-light: #8B9396;
+    --ink: #2B3A3F;
+    --line: rgba(43, 58, 63, 0.14);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--slate-deep);
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .device {
+    width: 390px;
+    background: var(--foam);
+    border-radius: 38px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 10px var(--slate-deep), 0 0 0 11px rgba(255,255,255,0.06);
+    position: relative;
+  }
+
+  .screen { display: none; min-height: 844px; }
+  .screen.active { display: block; }
+
+  .statusbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 26px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--foam);
+    background: var(--slate);
+  }
+  .statusbar.light { background: var(--foam-card); color: var(--slate); }
+
+  /* ---------- Top App Header ---------- */
+  .app-header {
+    background: var(--slate);
+    color: var(--foam);
+    padding: 4px 22px 16px;
+  }
+  .app-header .greeting {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .app-header .sub {
+    font-size: 13px;
+    color: rgba(232,228,217,0.6);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .avatar-btn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--bark-light);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--foam);
+    border: 1.5px solid rgba(232,228,217,0.3);
+    cursor: pointer;
+  }
+
+  /* ---------- Mode switcher ---------- */
+  .mode-switcher {
+    display: flex;
+    background: rgba(232,228,217,0.08);
+    border: 1px solid rgba(232,228,217,0.14);
+    border-radius: 12px;
+    padding: 4px;
+    margin-top: 14px;
+    gap: 4px;
+  }
+  .mode-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 4px;
+    border-radius: 9px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: rgba(232,228,217,0.55);
+    cursor: pointer;
+  }
+  .mode-btn.is-on { background: var(--foam); color: var(--slate); }
+  .mode-btn svg { flex-shrink: 0; }
+
+  /* ---------- Simple sub-header for inner screens ---------- */
+  .subheader {
+    background: var(--slate);
+    color: var(--foam);
+    padding: 6px 18px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .back-btn {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: rgba(232,228,217,0.1);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .subheader h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 600;
+  }
+  .subheader .sub { font-size: 12px; color: rgba(232,228,217,0.55); margin-top: 2px; }
+
+  /* ---------- Hero panel (fish/hike/ride each get an honest visual) ---------- */
+  .hero-card {
+    margin: 14px 18px 0;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 14px 30px rgba(20,28,30,0.35);
+  }
+  .hero-inner { background: var(--slate); padding: 20px 20px 0; position: relative; }
+  .hero-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 2; }
+  .gauge-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.09em; color: rgba(232,228,217,0.55); font-weight: 600; }
+  .gauge-status { font-family: 'Fraunces', serif; font-size: 20px; color: var(--foam); font-weight: 600; margin-top: 3px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(201,122,43,0.18); border: 1px solid rgba(201,122,43,0.5); color: var(--amber-soft);
+    font-size: 11.5px; font-weight: 600; padding: 5px 10px; border-radius: 100px; white-space: nowrap;
+  }
+  .pill.ridge { background: rgba(148,133,160,0.2); border-color: rgba(148,133,160,0.55); color: #C8BBD1; }
+  .pill.asphalt { background: rgba(139,147,150,0.2); border-color: rgba(139,147,150,0.55); color: #C7CDCF; }
+  .pill-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  /* Fish: water gauge wave */
+  .fish-wave-wrap { position: relative; height: 100px; margin-top: 14px; }
+  .fish-wave-wrap svg { position: absolute; bottom: 0; left: -20px; right: -20px; width: calc(100% + 40px); }
+  .gauge-readout { position: absolute; bottom: 14px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 2px; z-index: 3; }
+  .gauge-readout .metric { font-family: 'JetBrains Mono', monospace; }
+  .gauge-readout .metric .num { font-size: 19px; color: var(--foam); font-weight: 500; }
+  .gauge-readout .metric .unit { font-size: 10px; color: rgba(232,228,217,0.5); margin-left: 2px;}
+  .gauge-readout .metric .cap { font-size: 10px; color: rgba(232,228,217,0.45); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 3px; font-family: 'Inter', sans-serif;}
+
+  /* Hike: elevation profile strip, drawn as an actual line graph w/ trail marker */
+  .hike-profile-wrap { position: relative; height: 100px; margin-top: 16px; }
+  .hike-profile-wrap svg { position: absolute; bottom: 0; left: -20px; right: -20px; width: calc(100% + 40px); }
+  .hike-readout { display: flex; justify-content: space-between; padding: 14px 0 0; position: relative; z-index: 3; }
+  .hike-readout .metric { font-family: 'JetBrains Mono', monospace; }
+  .hike-readout .metric .num { font-size: 19px; color: var(--foam); font-weight: 500; }
+  .hike-readout .metric .unit { font-size: 10px; color: rgba(232,228,217,0.5); margin-left: 2px;}
+  .hike-readout .metric .cap { font-size: 10px; color: rgba(232,228,217,0.45); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 3px; font-family: 'Inter', sans-serif;}
+
+  /* Ride: simple route strip with mile-marker ticks, not a wave */
+  .ride-route-wrap { padding: 18px 0 6px; }
+  .ride-route-line { position: relative; height: 3px; background: rgba(232,228,217,0.18); border-radius: 2px; margin: 0 4px 10px; }
+  .ride-route-line .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 38%; background: var(--asphalt-light); border-radius: 2px; }
+  .ride-route-line .dot { position: absolute; top: 50%; transform: translate(-50%,-50%); width: 11px; height: 11px; border-radius: 50%; background: var(--amber); border: 2px solid var(--slate); }
+  .ride-route-labels { display: flex; justify-content: space-between; font-size: 10px; color: rgba(232,228,217,0.5); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 0 2px;}
+  .ride-readout { display: flex; justify-content: space-between; padding: 16px 0 0; }
+  .ride-readout .metric { font-family: 'JetBrains Mono', monospace; }
+  .ride-readout .metric .num { font-size: 19px; color: var(--foam); font-weight: 500; }
+  .ride-readout .metric .unit { font-size: 10px; color: rgba(232,228,217,0.5); margin-left: 2px;}
+  .ride-readout .metric .cap { font-size: 10px; color: rgba(232,228,217,0.45); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 3px; font-family: 'Inter', sans-serif;}
+
+  .hero-foot {
+    border-top: 1px solid rgba(232,228,217,0.12);
+    margin-top: 12px; padding: 11px 0;
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    position: relative; z-index: 2;
+  }
+  .hero-foot .next { font-size: 11.5px; color: rgba(232,228,217,0.7); line-height: 1.4; }
+  .hero-foot .next b { color: var(--foam); font-weight: 600; }
+  .hero-foot .link { font-size: 12px; font-weight: 600; color: var(--amber-soft); display: flex; align-items: center; gap: 3px; white-space: nowrap; }
+
+  /* ---------- Section heading ---------- */
+  .section { padding: 24px 18px 4px; }
+  .section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .section-head h2 { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; color: var(--slate); }
+  .section-head a { font-size: 12px; font-weight: 600; color: var(--trout); text-decoration: none; }
+
+  .scroll-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; margin: 0 -18px; padding-left: 18px; padding-right: 18px; scrollbar-width: none; }
+  .scroll-row::-webkit-scrollbar { display: none; }
+
+  .fly-card { min-width: 132px; background: var(--foam-card); border: 1px solid var(--line); border-radius: 16px; padding: 13px; flex-shrink: 0; }
+  .fly-card .swatch { width: 100%; height: 64px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+  .fly-card .name { font-size: 13px; font-weight: 700; color: var(--slate); line-height: 1.25; }
+  .fly-card .size { font-size: 11px; color: var(--bark-light); font-family: 'JetBrains Mono', monospace; margin-top: 3px; }
+
+  .report-card { background: var(--foam-card); border: 1px solid var(--line); border-radius: 16px; padding: 16px 17px; }
+  .report-card .meta { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--bark-light); font-weight: 600; margin-bottom: 9px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .report-card .meta .stamp { width: 6px; height: 6px; border-radius: 50%; background: var(--trout); }
+  .report-card p { font-size: 14px; line-height: 1.55; color: var(--slate); }
+  .report-card .signoff { margin-top: 12px; font-size: 12.5px; color: var(--bark-light); font-style: italic; }
+
+  .saturday-card { background: linear-gradient(135deg, var(--bark) 0%, #4A3624 100%); border-radius: 16px; padding: 18px; color: var(--foam); position: relative; overflow: hidden; }
+  .saturday-card::before { content: ""; position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; background: rgba(232,228,217,0.06); border-radius: 50%; }
+  .saturday-eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.09em; color: rgba(232,228,217,0.6); font-weight: 700; margin-bottom: 10px; }
+  .saturday-row { display: flex; align-items: center; gap: 12px; position: relative; z-index: 2; }
+  .saturday-row + .saturday-row { margin-top: 12px; }
+  .saturday-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(232,228,217,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .saturday-row .t { font-size: 14px; font-weight: 700; font-family: 'Fraunces', serif; }
+  .saturday-row .d { font-size: 12px; color: rgba(232,228,217,0.65); margin-top: 1px; }
+  .saturday-divider { height: 1px; background: rgba(232,228,217,0.14); margin: 14px 0; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .action-tile { background: var(--foam-card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 22px; cursor: pointer; }
+  .action-tile .icon-wrap { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; color: var(--foam); }
+  .action-tile .t { font-size: 13.5px; font-weight: 700; color: var(--slate); }
+  .action-tile .d { font-size: 11.5px; color: var(--bark-light); margin-top: 2px; }
+
+  .lore-card { border: 1px dashed var(--bark-light); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; background: rgba(92,69,48,0.04); }
+  .lore-card .emoji { font-size: 22px; flex-shrink: 0; }
+  .lore-card .txt { font-size: 12px; color: var(--bark-light); line-height: 1.45; font-style: italic; }
+  .lore-card .txt b { color: var(--bark); font-style: normal; font-weight: 700; }
+
+  .bottomnav { position: sticky; bottom: 0; background: rgba(245,242,234,0.92); backdrop-filter: blur(10px); border-top: 1px solid var(--line); display: flex; padding: 10px 6px 22px; }
+  .navitem { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--bark-light); opacity: 0.55; cursor: pointer; }
+  .navitem.active { opacity: 1; color: var(--trout); }
+  .navitem span { font-size: 10.5px; font-weight: 600; }
+
+  .scrollbody { max-height: 796px; overflow-y: auto; padding-bottom: 6px; }
+  .scrollbody::-webkit-scrollbar { display: none; }
+  .scrollbody.short { max-height: 796px; }
+
+  /* ---------- AUTH SCREENS ---------- */
+  .auth-screen { min-height: 844px; background: var(--slate); display: flex; flex-direction: column; }
+  .auth-hero { padding: 70px 30px 36px; text-align: center; }
+  .auth-mark { width: 56px; height: 56px; margin: 0 auto 18px; border-radius: 16px; background: var(--bark); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(232,228,217,0.18); }
+  .auth-hero h1 { font-family: 'Fraunces', serif; font-size: 27px; font-weight: 600; color: var(--foam); letter-spacing: -0.01em; }
+  .auth-hero p { font-size: 13.5px; color: rgba(232,228,217,0.55); margin-top: 8px; line-height: 1.5; max-width: 260px; margin-left: auto; margin-right: auto; }
+  .auth-sheet { background: var(--foam); border-radius: 28px 28px 0 0; flex: 1; padding: 30px 24px 40px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--bark); margin-bottom: 7px; }
+  .field input, .field select, .field textarea {
+    width: 100%; border: 1.5px solid var(--line); background: var(--foam-card); border-radius: 12px;
+    padding: 13px 14px; font-size: 14.5px; font-family: 'Inter', sans-serif; color: var(--slate);
+  }
+  .field textarea { resize: none; min-height: 80px; }
+  .field input::placeholder { color: #A39A89; }
+  .field-row { display: flex; gap: 10px; }
+  .field-row .field { flex: 1; }
+
+  .btn-primary { width: 100%; background: var(--trout); color: var(--foam); border: none; border-radius: 12px; padding: 15px; font-size: 14.5px; font-weight: 700; font-family: 'Inter', sans-serif; margin-top: 6px; cursor: pointer; letter-spacing: 0.01em; }
+  .auth-switch { text-align: center; margin-top: 22px; font-size: 13px; color: var(--bark-light); }
+  .auth-switch b { color: var(--trout); font-weight: 700; cursor: pointer; }
+
+  .member-perks { background: var(--foam-card); border: 1px dashed var(--bark-light); border-radius: 14px; padding: 14px 16px; margin-top: 18px; }
+  .member-perks .pt { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--bark); margin-bottom: 8px; }
+  .perk-row { display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: var(--slate); padding: 4px 0; }
+  .perk-row svg { flex-shrink: 0; color: var(--trout); }
+
+  /* ---------- Reservation / Catch upload (light screens) ---------- */
+  .light-screen { background: var(--foam); min-height: 844px; }
+  .light-body { padding: 0 18px 30px; }
+
+  .info-banner {
+    background: var(--foam-card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 13px 15px; font-size: 12.5px; color: var(--bark-light); line-height: 1.5; margin-bottom: 20px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .info-banner svg { flex-shrink: 0; margin-top: 1px; color: var(--bark); }
+
+  .site-options { display: flex; gap: 10px; margin-bottom: 16px; }
+  .site-opt {
+    flex: 1; border: 1.5px solid var(--line); background: var(--foam-card); border-radius: 12px;
+    padding: 12px 10px; text-align: center; cursor: pointer;
+  }
+  .site-opt.is-on { border-color: var(--trout); background: rgba(61,90,69,0.07); }
+  .site-opt .ico { font-size: 18px; }
+  .site-opt .lbl { font-size: 12px; font-weight: 700; color: var(--slate); margin-top: 5px; }
+  .site-opt .pr { font-size: 10.5px; color: var(--bark-light); margin-top: 1px; }
+
+  .checkbox-row { display: flex; align-items: flex-start; gap: 10px; margin: 16px 0 6px; }
+  .checkbox-row .box {
+    width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--trout); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; margin-top: 1px; cursor: pointer;
+  }
+  .checkbox-row .box.is-checked { background: var(--trout); }
+  .checkbox-row .txt { font-size: 12.5px; color: var(--slate); line-height: 1.5; }
+  .checkbox-row .txt b { font-weight: 700; }
+
+  /* Photo upload */
+  .upload-dropzone {
+    border: 1.5px dashed var(--bark-light); border-radius: 16px; background: var(--foam-card);
+    padding: 32px 20px; text-align: center; margin-bottom: 18px;
+  }
+  .upload-dropzone .icon-circle {
+    width: 52px; height: 52px; border-radius: 50%; background: var(--slate);
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;
+  }
+  .upload-dropzone .t { font-size: 14px; font-weight: 700; color: var(--slate); }
+  .upload-dropzone .d { font-size: 12px; color: var(--bark-light); margin-top: 4px; }
+
+  .preview-card {
+    background: var(--foam-card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-bottom: 18px;
+  }
+  .preview-img {
+    height: 170px; background: linear-gradient(135deg, #4A6B53 0%, #2F4A38 100%);
+    display: flex; align-items: center; justify-content: center; font-size: 40px; position: relative;
+  }
+  .preview-img .tag {
+    position: absolute; top: 10px; right: 10px; background: rgba(29,40,44,0.7); color: var(--foam);
+    font-size: 10.5px; font-weight: 600; padding: 4px 9px; border-radius: 100px;
+  }
+  .preview-meta { padding: 13px 15px; }
+
+  .slideshow-note {
+    display: flex; align-items: center; gap: 10px; background: rgba(201,122,43,0.08);
+    border: 1px solid rgba(201,122,43,0.25); border-radius: 12px; padding: 11px 13px; margin-top: 14px;
+  }
+  .slideshow-note svg { flex-shrink: 0; color: var(--amber); }
+  .slideshow-note span { font-size: 12px; color: var(--bark); line-height: 1.4; }
+
+  .proto-controls { width: 390px; margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .proto-controls button { background: rgba(232,228,217,0.1); border: 1px solid rgba(232,228,217,0.25); color: var(--foam); font-family: 'Inter', sans-serif; font-size: 11.5px; font-weight: 600; padding: 8px 13px; border-radius: 100px; cursor: pointer; }
+  .proto-controls button.is-active { background: var(--amber); border-color: var(--amber); color: var(--slate-deep); }
+  .proto-note { width: 390px; text-align: center; color: rgba(232,228,217,0.4); font-size: 11.5px; margin-top: 12px; font-family: 'Inter', sans-serif; }
+
+  .wrap-outer { display: flex; flex-direction: column; align-items: center; }
+</style>
+</head>
+<body>
+
+<div class="wrap-outer">
+<div class="device">
+
+  <!-- ============ HOME SCREEN ============ -->
+  <div class="screen active" id="screen-home">
+    <div class="statusbar"><span>9:41</span><span>●●●●  📶  🔋</span></div>
+
+    <div class="app-header">
+      <div class="header-row">
+        <div>
+          <div class="greeting">Reliance Fly &amp; Tackle</div>
+          <div class="sub">Reliance, TN · Friday, Jun 20</div>
+        </div>
+        <div class="avatar-btn" onclick="showScreen('screen-login')">A</div>
+      </div>
+      <div class="mode-switcher">
+        <div class="mode-btn is-on" data-mode="fish" onclick="setMode('fish')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12c2-4 5-6 10-6s8 2 10 6c-2 4-5 6-10 6s-8-2-10-6z"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>
+          Fish
+        </div>
+        <div class="mode-btn" data-mode="hike" onclick="setMode('hike')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20l6-16 4 9 3-5 5 12"/></svg>
+          Hike
+        </div>
+        <div class="mode-btn" data-mode="ride" onclick="setMode('ride')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M9 17h6l-2-9H8l5 5"/></svg>
+          Ride
+        </div>
+      </div>
+    </div>
+
+    <div class="scrollbody">
+
+      <!-- ===== FISH HERO: water gauge ===== -->
+      <div class="hero-card mode-panel" data-mode="fish">
+        <div class="hero-inner">
+          <div class="hero-top">
+            <div><div class="gauge-label">Hiwassee River · Powerhouse</div><div class="gauge-status">Generating now</div></div>
+            <div class="pill"><span class="pill-dot"></span>HIGH FLOW</div>
+          </div>
+          <div class="fish-wave-wrap">
+            <svg viewBox="0 0 390 100" preserveAspectRatio="none">
+              <path d="M0,50 C40,36 80,62 120,48 C160,32 200,56 240,42 C280,28 320,54 390,38 L390,100 L0,100 Z" fill="#3D5A45" opacity="0.55"/>
+              <path d="M0,62 C40,50 80,76 120,60 C160,46 200,68 240,55 C280,42 320,66 390,53 L390,100 L0,100 Z" fill="#3D5A45" opacity="0.85"/>
+            </svg>
+            <div class="gauge-readout">
+              <div class="metric"><div><span class="num">2,150</span><span class="unit">CFS</span></div><div class="cap">Current Flow</div></div>
+              <div class="metric" style="text-align:right"><div><span class="num">+2</span><span class="unit">ft</span></div><div class="cap">Above Normal</div></div>
+            </div>
+          </div>
+          <div class="hero-foot">
+            <div class="next">Stops generating <b>2:00 PM</b> · wading OK after</div>
+            <div class="link">TVA ↗</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== HIKE HERO: elevation profile, not a water wave ===== -->
+      <div class="hero-card mode-panel" data-mode="hike" style="display:none;">
+        <div class="hero-inner">
+          <div class="hero-top">
+            <div><div class="gauge-label">Benton MacKaye Trail · RFT Access</div><div class="gauge-status">Trailhead conditions: good</div></div>
+            <div class="pill ridge"><span class="pill-dot"></span>CLEAR</div>
+          </div>
+          <div class="hike-profile-wrap">
+            <svg viewBox="0 0 390 80" preserveAspectRatio="none">
+              <polyline points="0,72 50,68 90,40 140,52 180,22 230,38 270,15 320,30 360,10 390,18" fill="none" stroke="#9485A0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="0" cy="72" r="5" fill="#E8E4D9"/>
+              <text x="10" y="63" fill="rgba(232,228,217,0.55)" font-size="9" font-family="Inter, sans-serif" font-weight="600">RFT · 778 FT</text>
+              <text x="330" y="34" fill="rgba(232,228,217,0.55)" font-size="9" font-family="Inter, sans-serif" font-weight="600" text-anchor="end">BIG FROG · 4,224 FT</text>
+            </svg>
+          </div>
+          <div class="hike-readout">
+            <div class="metric"><div><span class="num">68°</span><span class="unit">F</span></div><div class="cap">At Trailhead</div></div>
+            <div class="metric" style="text-align:right"><div><span class="num">288</span><span class="unit">mi</span></div><div class="cap">To Springer, GA</div></div>
+          </div>
+          <div class="hero-foot">
+            <div class="next">Connects to the <b>Appalachian Trail</b> near Big Frog</div>
+            <div class="link">Map ↗</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== RIDE HERO: route strip with mile ticks, not a wave ===== -->
+      <div class="hero-card mode-panel" data-mode="ride" style="display:none;">
+        <div class="hero-inner">
+          <div class="hero-top">
+            <div><div class="gauge-label">TransAmerica Trail · TN Route</div><div class="gauge-status">RFT is a waypoint stop</div></div>
+            <div class="pill asphalt"><span class="pill-dot"></span>ROAD OPEN</div>
+          </div>
+          <div class="ride-route-wrap">
+            <div class="ride-route-line">
+              <div class="fill"></div>
+              <div class="dot" style="left:38%;"></div>
+            </div>
+            <div class="ride-route-labels"><span>Murphy, NC</span><span>Reliance, TN</span><span>Cleveland, TN</span></div>
+          </div>
+          <div class="ride-readout">
+            <div class="metric"><div><span class="num">71°</span><span class="unit">F</span></div><div class="cap">Current Temp</div></div>
+            <div class="metric" style="text-align:right"><div><span class="num">SR-30</span></div><div class="cap">Through Route</div></div>
+          </div>
+          <div class="hero-foot">
+            <div class="next">Gravel pulloff parking · <b>fuel 9 mi</b> in Benton</div>
+            <div class="link">Map ↗</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== FISH CONTENT ===== -->
+      <div class="mode-panel" data-mode="fish">
+        <div class="section">
+          <div class="section-head"><h2>Today's Fly Report</h2><a href="#">See all</a></div>
+          <div class="scroll-row">
+            <div class="fly-card"><div class="swatch" style="background:#D9CDB8;">🪰</div><div class="name">Pheasant Tail</div><div class="size">SIZE 16–18</div></div>
+            <div class="fly-card"><div class="swatch" style="background:#C9D9C2;">🪰</div><div class="name">Y2K</div><div class="size">SIZE 14</div></div>
+            <div class="fly-card"><div class="swatch" style="background:#D8C2A8;">🪰</div><div class="name">Sex Dungeon</div><div class="size">SIZE 4 (stripers)</div></div>
+            <div class="fly-card"><div class="swatch" style="background:#C2CFD8;">🪰</div><div class="name">Zebra Midge</div><div class="size">SIZE 18–20</div></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="report-card">
+            <div class="meta"><span class="stamp"></span>FROM THE SHOP · 7:40 AM</div>
+            <p>Water's up and stained from last night's release. Stripping streamers along the seams has been producing. Trout fishing should clean up by mid-afternoon once generation stops.</p>
+            <div class="signoff">— Posted by the shop</div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-head"><h2>Plan Your Trip</h2></div>
+          <div class="grid2">
+            <div class="action-tile"><div class="icon-wrap" style="background:var(--amber)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></div><div><div class="t">Float Sections</div><div class="d">Map &amp; mileage guide</div></div></div>
+            <div class="action-tile" onclick="showScreen('screen-reserve')"><div class="icon-wrap" style="background:var(--trout)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div><div class="t">Book a Site</div><div class="d">Campsite or cabin</div></div></div>
+            <div class="action-tile"><div class="icon-wrap" style="background:var(--bark)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8a2 2 0 00-2-2h-3l-2-2H9L7 6H4a2 2 0 00-2 2v9a2 2 0 002 2h7"/><circle cx="11" cy="13" r="3"/></svg></div><div><div class="t">Shop the Fly Bin</div><div class="d">Order ahead, pick up</div></div></div>
+            <div class="action-tile" onclick="showScreen('screen-catch')"><div class="icon-wrap" style="background:var(--slate)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div><div class="t">Share Your Catch</div><div class="d">Upload to the shop feed</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== HIKE CONTENT ===== -->
+      <div class="mode-panel" data-mode="hike" style="display:none;">
+        <div class="section">
+          <div class="section-head"><h2>On the Trail</h2></div>
+          <div class="report-card">
+            <div class="meta"><span class="stamp"></span>TRAIL NOTE · UPDATED TODAY</div>
+            <p>Creek crossings are running normal for June. Bugs are out — bring repellent. The store stocks fuel canisters, trail snacks, and can fill water bottles before you head out.</p>
+            <div class="signoff">— Posted by the shop</div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-head"><h2>Nearby on the BMT</h2></div>
+          <div class="scroll-row">
+            <div class="fly-card"><div class="swatch" style="background:#DCD6E0;">⛺</div><div class="name">Quinn Springs</div><div class="size">2.1 MI N</div></div>
+            <div class="fly-card"><div class="swatch" style="background:#D2E0D6;">💧</div><div class="name">Bald River Falls</div><div class="size">11 MI</div></div>
+            <div class="fly-card"><div class="swatch" style="background:#E0D6CC;">🏔️</div><div class="name">Big Frog Summit</div><div class="size">14 MI</div></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-head"><h2>Plan Your Hike</h2></div>
+          <div class="grid2">
+            <div class="action-tile"><div class="icon-wrap" style="background:var(--ridge)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20l6-16 4 9 3-5 5 12"/></svg></div><div><div class="t">Trail Map</div><div class="d">Sections &amp; mileage</div></div></div>
+            <div class="action-tile" onclick="showScreen('screen-reserve')"><div class="icon-wrap" style="background:var(--trout)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div><div class="t">Book a Site</div><div class="d">Campsite or cabin</div></div></div>
+            <div class="action-tile"><div class="icon-wrap" style="background:var(--bark)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v6h6M3 3l7 7M21 21v-6h-6M21 21l-7-7"/></svg></div><div><div class="t">Resupply List</div><div class="d">What the store stocks</div></div></div>
+            <div class="action-tile"><div class="icon-wrap" style="background:var(--slate)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8 6 6 10 6 13a6 6 0 0012 0c0-3-2-7-6-11z"/></svg></div><div><div class="t">Water Sources</div><div class="d">Fill-up points nearby</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== RIDE CONTENT ===== -->
+      <div class="mode-panel" data-mode="ride" style="display:none;">
+        <div class="section">
+          <div class="section-head"><h2>On the Road</h2></div>
+          <div class="report-card">
+            <div class="meta"><span class="stamp"></span>ROAD NOTE · UPDATED TODAY</div>
+            <p>SR-30 along the river is in good shape, a few gravel patches past the powerhouse. Plenty of pulloffs for photos. The store has air, basic tools, and cold drinks for the ride.</p>
+            <div class="signoff">— Posted by the shop</div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-head"><h2>TransAm Mile Markers</h2></div>
+          <div class="scroll-row">
+            <div class="fly-card"><div class="swatch" style="background:#D6DBDD;">⛽</div><div class="name">Benton Fuel</div><div class="size">9 MI W</div></div>
+            <div class="fly-card"><div class="swatch" style="background:#DDD6D2;">🔧</div><div class="name">Cleveland Shop</div><div class="size">28 MI W</div></div>
+            <div class="fly-card"><div class="swatch" style="background:#D2D8DD;">🏕️</div><div class="name">Ocoee Camp</div><div class="size">19 MI S</div></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-head"><h2>Plan Your Ride</h2></div>
+          <div class="grid2">
+            <div class="action-tile"><div class="icon-wrap" style="background:var(--asphalt)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M9 17h6l-2-9H8l5 5"/></svg></div><div><div class="t">Route Map</div><div class="d">SR-30 through Reliance</div></div></div>
+            <div class="action-tile" onclick="showScreen('screen-reserve')"><div class="icon-wrap" style="background:var(--trout)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div><div class="t">Book a Site</div><div class="d">Campsite or cabin</div></div></div>
+            <div class="action-tile"><div class="icon-wrap" style="background:var(--bark)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></div><div><div class="t">Fuel &amp; Air</div><div class="d">Pumps &amp; tire service</div></div></div>
+            <div class="action-tile"><div class="icon-wrap" style="background:var(--slate)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><div><div class="t">Rest Stops</div><div class="d">Pulloffs &amp; views</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SHARED: This Week at RFT ===== -->
+      <div class="section">
+        <div class="section-head"><h2>This Week at RFT</h2></div>
+        <div class="saturday-card">
+          <div class="saturday-eyebrow">Saturday Night</div>
+          <div class="saturday-row">
+            <div class="saturday-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8E4D9" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+            <div><div class="t">Live Music, 7 PM</div><div class="d">Local pickers on the back porch</div></div>
+          </div>
+          <div class="saturday-divider"></div>
+          <div class="saturday-row">
+            <div class="saturday-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E8E4D9" stroke-width="2"><path d="M3 3v18M3 8h18M3 13h18M21 3v18"/></svg></div>
+            <div><div class="t">This Week's Dish: Spaghetti</div><div class="d">Served from the deli, while it lasts</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SHARED: Lore card ===== -->
+      <div class="section" style="padding-bottom: 28px;">
+        <div class="lore-card">
+          <div class="emoji">👣</div>
+          <div class="txt">No confirmed sightings on the river today... <b>but we're keeping an eye out.</b></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="bottomnav">
+      <div class="navitem active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h12a1 1 0 001-1V10"/></svg><span>Home</span></div>
+      <div class="navitem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12c2-4 5-6 10-6s8 2 10 6c-2 4-5 6-10 6s-8-2-10-6z"/><circle cx="12" cy="12" r="2"/></svg><span>River</span></div>
+      <div class="navitem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4M3 6h18M16 10a4 4 0 01-8 0"/></svg><span>Shop</span></div>
+      <div class="navitem" onclick="showScreen('screen-login')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Account</span></div>
+    </div>
+  </div>
+
+  <!-- ============ CAMPSITE RESERVATION REQUEST ============ -->
+  <div class="screen" id="screen-reserve">
+    <div class="light-screen">
+      <div class="statusbar light"><span>9:41</span><span>●●●●  📶  🔋</span></div>
+      <div class="subheader" style="background:var(--slate);">
+        <div class="back-btn" onclick="showScreen('screen-home')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8E4D9" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></div>
+        <div><h1>Request a Site</h1><div class="sub">We'll confirm by phone or email</div></div>
+      </div>
+
+      <div class="scrollbody">
+        <div class="light-body" style="padding-top:20px;">
+
+          <div class="info-banner">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+            <span>This sends a request — it doesn't book the site automatically. The shop will reach out to confirm availability.</span>
+          </div>
+
+          <div class="field">
+            <label>What are you looking for?</label>
+          </div>
+          <div class="site-options">
+            <div class="site-opt is-on" data-opt="site" onclick="setSiteOpt(this)">
+              <div class="ico">⛺</div><div class="lbl">Campsite</div><div class="pr">Behind the store</div>
+            </div>
+            <div class="site-opt" data-opt="cabin" onclick="setSiteOpt(this)">
+              <div class="ico">🏡</div><div class="lbl">Cabin</div><div class="pr">Sleeps four</div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field"><label>Check-in</label><input type="text" placeholder="Jun 27"></div>
+            <div class="field"><label>Check-out</label><input type="text" placeholder="Jun 29"></div>
+          </div>
+
+          <div class="field">
+            <label>Party Size</label>
+            <input type="text" placeholder="e.g. 2 adults, 1 tent">
+          </div>
+
+          <div class="field">
+            <label>Name</label>
+            <input type="text" placeholder="Your name">
+          </div>
+
+          <div class="field-row">
+            <div class="field"><label>Phone</label><input type="text" placeholder="(423) 555-0100"></div>
+            <div class="field"><label>Email</label><input type="text" placeholder="you@email.com"></div>
+          </div>
+
+          <div class="field">
+            <label>Anything else?</label>
+            <textarea placeholder="RV hookup needed, arriving late, etc."></textarea>
+          </div>
+
+          <button class="btn-primary">Send Request</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SHARE YOUR CATCH ============ -->
+  <div class="screen" id="screen-catch">
+    <div class="light-screen">
+      <div class="statusbar light"><span>9:41</span><span>●●●●  📶  🔋</span></div>
+      <div class="subheader" style="background:var(--slate);">
+        <div class="back-btn" onclick="showScreen('screen-home')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8E4D9" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg></div>
+        <div><h1>Share Your Catch</h1><div class="sub">Log it for yourself, or show it off</div></div>
+      </div>
+
+      <div class="scrollbody">
+        <div class="light-body" style="padding-top:20px;">
+
+          <div class="preview-card">
+            <div class="preview-img">
+              🎣
+              <div class="tag">Preview</div>
+            </div>
+            <div class="preview-meta">
+              <div class="field" style="margin-bottom:12px;"><label>Species</label><input type="text" placeholder="e.g. Rainbow Trout"></div>
+              <div class="field-row">
+                <div class="field"><label>Length</label><input type="text" placeholder='14"'></div>
+                <div class="field"><label>Fly Used</label><input type="text" placeholder="Pheasant Tail"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="upload-dropzone">
+            <div class="icon-circle">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8E4D9" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M3 16v3a2 2 0 002 2h14a2 2 0 002-2v-3"/></svg>
+            </div>
+            <div class="t">Tap to upload a photo</div>
+            <div class="d">or take one right now</div>
+          </div>
+
+          <div class="checkbox-row">
+            <div class="box is-checked" onclick="this.classList.toggle('is-checked')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E8E4D9" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            <div class="txt"><b>OK to show in the shop slideshow.</b> The shop may feature this photo on the TV in the store. Uncheck to keep it just for your own log.</div>
+          </div>
+
+          <div class="slideshow-note">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span>Shop staff pick favorites for the slideshow — not every photo makes the cut, and that's OK.</span>
+          </div>
+
+          <button class="btn-primary" style="margin-top:18px;">Add to My Catches</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ LOGIN SCREEN ============ -->
+  <div class="screen" id="screen-login">
+    <div class="auth-screen">
+      <div class="statusbar"><span>9:41</span><span>●●●●  📶  🔋</span></div>
+      <div class="auth-hero">
+        <div class="auth-mark"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8E4D9" stroke-width="1.8"><path d="M2 12c2-4 5-6 10-6s8 2 10 6c-2 4-5 6-10 6s-8-2-10-6z"/><circle cx="12" cy="12" r="1.6" fill="#E8E4D9"/></svg></div>
+        <h1>Welcome back</h1>
+        <p>Sign in to check the gauge, reorder flies, and manage your bookings.</p>
+      </div>
+      <div class="auth-sheet">
+        <div class="field"><label>Email</label><input type="email" placeholder="you@email.com"></div>
+        <div class="field"><label>Password</label><input type="password" placeholder="••••••••••"></div>
+        <button class="btn-primary" onclick="showScreen('screen-home')">Sign In</button>
+        <div class="auth-switch">New here? <b onclick="showScreen('screen-signup')">Create an account</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SIGN UP SCREEN ============ -->
+  <div class="screen" id="screen-signup">
+    <div class="auth-screen">
+      <div class="statusbar"><span>9:41</span><span>●●●●  📶  🔋</span></div>
+      <div class="auth-hero" style="padding-top:50px;">
+        <div class="auth-mark"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8E4D9" stroke-width="1.8"><path d="M2 12c2-4 5-6 10-6s8 2 10 6c-2 4-5 6-10 6s-8-2-10-6z"/><circle cx="12" cy="12" r="1.6" fill="#E8E4D9"/></svg></div>
+        <h1>Join the shop</h1>
+        <p>Create a free account to save trips, track orders, and get the morning report first.</p>
+      </div>
+      <div class="auth-sheet" style="padding-top:24px;">
+        <div class="field"><label>Full Name</label><input type="text" placeholder="Your name"></div>
+        <div class="field"><label>Email</label><input type="email" placeholder="you@email.com"></div>
+        <div class="field"><label>Password</label><input type="password" placeholder="Create a password"></div>
+
+        <div class="member-perks">
+          <div class="pt">Free Account Includes</div>
+          <div class="perk-row"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Daily flow, trail &amp; road reports</div>
+          <div class="perk-row"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Request a campsite or cabin</div>
+          <div class="perk-row"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Keep a log of your catches</div>
+        </div>
+
+        <button class="btn-primary" onclick="showScreen('screen-home')">Create Account</button>
+        <div class="auth-switch">Already have an account? <b onclick="showScreen('screen-login')">Sign in</b></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="proto-controls">
+  <button onclick="showScreen('screen-home')" id="btn-home" class="is-active">Home</button>
+  <button onclick="showScreen('screen-reserve')" id="btn-reserve">Reserve a Site</button>
+  <button onclick="showScreen('screen-catch')" id="btn-catch">Share a Catch</button>
+  <button onclick="showScreen('screen-login')" id="btn-login">Sign In</button>
+  <button onclick="showScreen('screen-signup')" id="btn-signup">Sign Up</button>
+</div>
+<div class="proto-note">On Home, tap Fish / Hike / Ride to switch modes · tap a Plan Your Trip tile to open a flow</div>
+</div>
+
+<script>
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.proto-controls button').forEach(b => b.classList.remove('is-active'));
+  const map = {'screen-home':'btn-home','screen-reserve':'btn-reserve','screen-catch':'btn-catch','screen-login':'btn-login','screen-signup':'btn-signup'};
+  if (map[id]) document.getElementById(map[id]).classList.add('is-active');
+}
+function setMode(mode) {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('is-on', b.dataset.mode === mode));
+  document.querySelectorAll('.mode-panel').forEach(p => p.style.display = (p.dataset.mode === mode ? '' : 'none'));
+}
+function setSiteOpt(el) {
+  document.querySelectorAll('.site-opt').forEach(o => o.classList.remove('is-on'));
+  el.classList.add('is-on');
+}
+</script>
+
+</body>
+</html>
